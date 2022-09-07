@@ -1,0 +1,7 @@
+{
+    "nome": "American BBQ",
+    "taxaFrete": 9.90,
+    "cozinha": {
+        "id": 2
+    }
+}
