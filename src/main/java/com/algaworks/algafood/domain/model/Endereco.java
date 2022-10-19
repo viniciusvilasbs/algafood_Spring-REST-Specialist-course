@@ -30,5 +30,4 @@ public class Endereco {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "endereco_cidade_id")
 	private Cidade cidade;
-	
 }

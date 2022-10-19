@@ -13,16 +13,14 @@ import com.algaworks.algafood.domain.model.Cozinha;
 @Component
 public class CozinhaModelAssembler {
 
-	 @Autowired
-	    private ModelMapper modelMapper;
-	    
-	    public CozinhaModel toModel(Cozinha cozinha) {
-	        return modelMapper.map(cozinha, CozinhaModel.class);
-	    }
-	    
-	    public List<CozinhaModel> toCollectionModel(List<Cozinha> cozinhas) {
-	        return cozinhas.stream()
-	                .map(cozinha -> toModel(cozinha))
-	                .collect(Collectors.toList());
-	    }   
+	@Autowired
+	private ModelMapper modelMapper;
+
+	public CozinhaModel toModel(Cozinha cozinha) {
+		return modelMapper.map(cozinha, CozinhaModel.class);
+	}
+
+	public List<CozinhaModel> toCollectionModel(List<Cozinha> cozinhas) {
+		return cozinhas.stream().map(cozinha -> toModel(cozinha)).collect(Collectors.toList());
+	}
 }
