@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.algaworks.algafood.infrastructure.repository.CustomJpaRepositoryImpl;
 
+//@EnableWebMvc
 @SpringBootApplication
 @EnableJpaRepositories(repositoryBaseClass = CustomJpaRepositoryImpl.class)
 public class AlgafoodApiApplication {
