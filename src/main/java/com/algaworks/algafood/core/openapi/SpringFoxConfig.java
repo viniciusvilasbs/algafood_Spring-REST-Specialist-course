@@ -1,6 +1,5 @@
 package com.algaworks.algafood.core.openapi;
 
-import java.awt.print.Pageable;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
@@ -14,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
