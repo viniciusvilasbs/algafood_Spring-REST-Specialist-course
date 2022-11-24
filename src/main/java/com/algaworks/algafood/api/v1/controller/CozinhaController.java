@@ -29,10 +29,16 @@ import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.repository.CozinhaRepository;
 import com.algaworks.algafood.domain.service.CadastroCozinhaService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping(path = "/v1/cozinhas")
 public class CozinhaController implements CozinhaControllerOpenApi {
 
+//	Use este comando para inserir o SLF4J e depois usá-lo em algum método (ex. listar)
+//	private static final Logger logger = LoggerFactory.getLogger(CozinhaController.class);
+	
 	@Autowired
 	private CozinhaRepository cozinhaRepository;
 
@@ -51,6 +57,17 @@ public class CozinhaController implements CozinhaControllerOpenApi {
 	@Override
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public PagedModel<CozinhaModel> listar(@PageableDefault(size = 10) Pageable pageable) {
+		
+//		Esta linha é para usar o SLF4J pelo LOMBOK
+		log.info("Consultando cozinhas com paginas de {} registros.", pageable.getPageSize());
+		
+//		Esta linha é para usar o SLF4J injteado manualmente
+//		logger.info("Consultando cozinhas com paginas de {} registros.", pageable.getPageSize());
+		
+//		if (true) {
+//			throw new RuntimeException("Teste de exception");
+//		}
+		
 		Page<Cozinha> cozinhasPage = cozinhaRepository.findAll(pageable);
 		
 		PagedModel<CozinhaModel> cozinhasPagedModel = pagedResourcesAssembler
