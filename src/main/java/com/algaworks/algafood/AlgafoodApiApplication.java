@@ -15,6 +15,12 @@ public class AlgafoodApiApplication {
 
 	public static void main(String[] args) {
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+		
+//		comando alternativo para alterar a inicialização da API, inicializando o Base64ProtocolResolver
+//		var app = new SpringApplication(AlgafoodApiApplication.class);
+//		app.addListeners(new Base64ProtocolResolver());
+//		app.run(args);
+		
 		SpringApplication.run(AlgafoodApiApplication.class, args);
 	}
 }

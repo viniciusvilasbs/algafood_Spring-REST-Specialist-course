@@ -21,6 +21,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.algaworks.algafood.api.exceptionhandler.Problem;
 import com.algaworks.algafood.api.v1.model.CidadeModel;
@@ -55,22 +57,30 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.OAuthBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RepresentationBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.builders.ResponseBuilder;
 import springfox.documentation.schema.AlternateTypeRules;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.AuthorizationScope;
 import springfox.documentation.service.Contact;
+import springfox.documentation.service.GrantType;
+import springfox.documentation.service.HttpAuthenticationScheme;
+import springfox.documentation.service.ResourceOwnerPasswordCredentialsGrant;
 import springfox.documentation.service.Response;
+import springfox.documentation.service.SecurityReference;
+import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.service.Tag;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.json.JacksonModuleRegistrar;
 import springfox.documentation.spring.web.plugins.Docket;
 
 @Configuration
 @Import(BeanValidatorPluginsConfiguration.class)
-public class SpringFoxConfig {
+public class SpringFoxConfig implements WebMvcConfigurer {
 	
 	@Bean
 	public Docket apiDocketV1() {
@@ -137,7 +147,10 @@ public class SpringFoxConfig {
 						new Tag("Produtos", "Gerencia os produtos dos restaurantes."),
 						new Tag("Usuários", "Gerencia os usuários."),
 						new Tag("Estatísticas", "Estatísticas da AlgaFood"),
-						new Tag("Permissões", "Gerencia as permissões"));
+						new Tag("Permissões", "Gerencia as permissões"))
+				.securityContexts(Arrays.asList(securityContext()))
+		        .securitySchemes(List.of(authenticationScheme()))
+		        .securityContexts(List.of(securityContext()));
 	}
 	
 	@Bean
@@ -169,7 +182,10 @@ public class SpringFoxConfig {
 				        CidadesModelV2OpenApi.class))
 	            .apiInfo(apiInfoV2())
 	            .tags(new Tag("Cidades", "Gerencia as cidades"),
-	                    new Tag("Cozinhas", "Gerencia as cozinhas"));
+	                    new Tag("Cozinhas", "Gerencia as cozinhas"))
+	            .securityContexts(Arrays.asList(securityContext()))
+	            .securitySchemes(List.of(authenticationScheme()))
+	            .securityContexts(List.of(securityContext()));
 	}
 	
 	private List<Response> globalGetResponseMessages() {
@@ -261,4 +277,46 @@ public class SpringFoxConfig {
 	            .referenceModel(ref -> ref.key(k -> k.qualifiedModelName(
 	                    q -> q.name("Problema").namespace("com.algaworks.algafood.api.exceptionhandler")))));
 	}
+	
+	private SecurityContext securityContext() {
+		  return SecurityContext.builder()
+		        .securityReferences(securityReference()).build();
+		}
+
+		private List<SecurityReference> securityReference() {
+		  AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+		  AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+		  authorizationScopes[0] = authorizationScope;
+		  return List.of(new SecurityReference("Authorization", authorizationScopes));
+		}
+
+		private HttpAuthenticationScheme authenticationScheme() {
+		  return HttpAuthenticationScheme.JWT_BEARER_BUILDER.name("Authorization").build();
+		}
+		
+		private SecurityScheme securityScheme() {
+			return new OAuthBuilder()
+					.name("AlgaFood")
+					.grantTypes(grantTypes())
+					.scopes(scopes())
+					.build();
+		}
+		
+		private List<GrantType> grantTypes() {
+			return Arrays.asList(new ResourceOwnerPasswordCredentialsGrant("/oauth/token"));
+		}
+		
+		private List<AuthorizationScope> scopes() {
+			return Arrays.asList(new AuthorizationScope("READ", "Acesso de leitura"),
+					new AuthorizationScope("WRITE", "Acesso de escrita"));
+		}
+		
+		@Override
+		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			registry.addResourceHandler("swagger-ui.html")
+				.addResourceLocations("classpath:/META-INF/resources/");
+			
+			registry.addResourceHandler("/webjars/**")
+				.addResourceLocations("classpath:/META-INF/resources/webjars/");
+		}
 }
